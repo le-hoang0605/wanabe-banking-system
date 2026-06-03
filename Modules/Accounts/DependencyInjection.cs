@@ -1,0 +1,23 @@
+﻿using Accounts.Models.Context;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Accounts;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddAccountsModule(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+        services.AddDbContext<AccountManagementContext>(options =>
+            options.UseSqlServer(connectionString));
+        services.AddScoped<IAccountManagementContext>(provider =>
+            provider.GetRequiredService<AccountManagementContext>());
+        // You can also register internal services/repositories here if you have them
+        // services.AddScoped<IAccountService, AccountService>();
+
+        return services;
+    }
+}
