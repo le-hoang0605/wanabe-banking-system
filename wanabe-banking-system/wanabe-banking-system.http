@@ -1,0 +1,6 @@
+@wanabe_banking_system_HostAddress = http://localhost:5296
+
+GET {{wanabe_banking_system_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

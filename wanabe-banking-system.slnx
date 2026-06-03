@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Modules/Accounts/Accounts.csproj" />
+  <Project Path="Modules/Parties/Parties.csproj" />
+  <Project Path="Modules/Transactions/Transactions.csproj" />
+  <Project Path="wanabe-banking-system/wanabe-banking-system.csproj" />
+</Solution>
