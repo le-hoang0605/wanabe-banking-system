@@ -9,6 +9,10 @@ public class Account
     public string Currency { get; set; } = "VND";
     public Status Status { get; set; } //Active, Suspended
     public Role Role { get; set; } //User, Manager
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public DateTime? UpdatedAt { get; set; }
 }
 
 public enum Status
