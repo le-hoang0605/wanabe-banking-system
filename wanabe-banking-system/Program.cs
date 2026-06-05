@@ -2,13 +2,17 @@ using Accounts;
 using Parties;
 using Transactions;
 using Microsoft.OpenApi;
+using wanabe_banking_system;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DBConnection");
 
 builder.Services.AddAccountsModule(builder.Configuration);
-builder.Services.AddControllers().AddApplicationPart(typeof(DependencyInjection).Assembly);
+builder.Services.AddTransactionsModule(builder.Configuration);
+
+builder.Services.AddControllers().AddApplicationPart(typeof(Accounts.DependencyInjection).Assembly)
+    .AddApplicationPart(typeof(Transactions.DependencyInjection).Assembly);
 
 
 // Add services to the container.
@@ -49,8 +53,9 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
 
+app.MapControllers();
 app.UseStaticFiles();
+
 app.MapGet("/", () => "banking system API");
 app.Run();
