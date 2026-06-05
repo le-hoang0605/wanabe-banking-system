@@ -1,6 +1,6 @@
 namespace Transactions.Models;
 
-internal class LedgerEntry
+public class LedgerEntry
 {
     public PaymentOrder paymentOrder { get; set; }
     public Guid EntryId { get; set; }

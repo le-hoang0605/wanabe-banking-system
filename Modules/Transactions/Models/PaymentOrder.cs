@@ -2,7 +2,7 @@ using System.Data;
 
 namespace Transactions.Models;
 
-internal class PaymentOrder
+public class PaymentOrder
 {
     public ICollection<LedgerEntry> LedgerEntries { get; set; } = new List<LedgerEntry>();
     public Guid PaymentId { get; set; }
