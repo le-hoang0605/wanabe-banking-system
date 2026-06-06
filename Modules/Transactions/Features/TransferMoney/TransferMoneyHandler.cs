@@ -14,7 +14,7 @@ namespace Transactions.Features.TransferMoney
             _context = context;
         }
 
-        public async Task<(bool IsValid, TransferResultDto? DuplicateResult, TransferSessionDto? Session)> PrepareTransferAsync(CreateTransferRequestDto request)
+        public async Task<(bool IsValid, TransferResultDto? DuplicateResult, TransferSessionDto? Session)> PrepareTransferAsync(TransferRequestWithKeyDto request)
         {
             var existingOrder = await _context.PaymentOrders.AsNoTracking()
                 .FirstOrDefaultAsync(p => p.IdempotencyKey == request.IdempotencyKey);
@@ -71,9 +71,7 @@ namespace Transactions.Features.TransferMoney
         {
             var localOrder = await _context.PaymentOrders.FirstOrDefaultAsync(o => o.PaymentId == paymentId);
             if (localOrder == null) return;
-
             localOrder.Status = isSuccess ? Status.Executed : Status.Failed;
-
             await _context.SaveChangesAsync();
         }
     }

@@ -17,9 +17,18 @@ namespace wanabe_banking_system.Controllers
         }
 
         [HttpPost("transfer")]
-        public async Task<IActionResult> Transfer([FromBody] CreateTransferRequestDto request)
+        public async Task<IActionResult> Transfer([FromBody] CreateTransferRequestDto request, [FromHeader(Name = "X-Idempotency-Key")] string? idempotencyKey)
         {
-            var result = await _orchestrator.ExecuteTransferAsync(request);
+            //check idempotency key if we dont have we will creaate a new one
+            var key = string.IsNullOrEmpty(idempotencyKey) ? Guid.NewGuid().ToString() : idempotencyKey;
+            //we use DTO with key here
+            var internalRequest = new TransferRequestWithKeyDto(
+                request.DebtorAccountId,
+                request.CreditorAccountId,
+                request.Amount,
+                key
+            );
+            var result = await _orchestrator.ExecuteTransferAsync(internalRequest);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }

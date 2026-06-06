@@ -17,25 +17,24 @@ namespace wanabe_banking_system.UseCases
             _accountService = accountService;
         }
 
-        public async Task<TransferResultDto> ExecuteTransferAsync(CreateTransferRequestDto request)
+        public async Task<TransferResultDto> ExecuteTransferAsync(TransferRequestWithKeyDto request)
         {
             var (isValid, duplicateResult, session) = await _txHandler.PrepareTransferAsync(request);
             if (!isValid) return duplicateResult!;
 
             try
             {
-                // 🔥 SỬA LỖI 1: Thêm .ToString() cho DebtorAccountId
-                var debitResult = await _accountService.DebitAsync(session!.DebtorAccountId.ToString(), session.Amount, session.PaymentId);
+                var debitResult = await _accountService.DebitAsync(session!.DebtorAccountId, session.Amount, session.PaymentId);
                 if (!debitResult.IsSuccess)
                 {
                     await _txHandler.ConfirmTransferAsync(session.PaymentId, isSuccess: false, debitResult.ErrorMessage);
                     return new TransferResultDto(false, debitResult.ErrorMessage, session.PaymentId, "Failed");
                 }
 
-                var creditResult = await _accountService.CreditAsync(session.CreditorAccountId.ToString(), session.Amount, session.PaymentId);
+                var creditResult = await _accountService.CreditAsync(session.CreditorAccountId, session.Amount, session.PaymentId);
                 if (!creditResult.IsSuccess)
                 {
-                    await _accountService.CreditAsync(session.DebtorAccountId.ToString(), session.Amount, session.PaymentId);
+                    await _accountService.CreditAsync(session.DebtorAccountId, session.Amount, session.PaymentId);
 
                     await _txHandler.ConfirmTransferAsync(session.PaymentId, isSuccess: false, creditResult.ErrorMessage);
                     return new TransferResultDto(false, creditResult.ErrorMessage, session.PaymentId, "Failed");
