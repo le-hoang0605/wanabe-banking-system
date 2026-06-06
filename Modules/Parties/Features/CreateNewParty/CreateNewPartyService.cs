@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Parties.Models;
 using Parties.Models.Context;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Parties.Features.CreateNewParty
 {
@@ -19,7 +16,7 @@ namespace Parties.Features.CreateNewParty
         {
             if (String.IsNullOrWhiteSpace(request.Email)) return null;
             var email = await _context.Parties.AnyAsync(p => p.Email == request.Email.Trim());
-            if (!email) return null;
+            if (email) return null;
 
             var newParty = new Party
             {
@@ -37,7 +34,7 @@ namespace Parties.Features.CreateNewParty
             catch (Exception ex)
             {
                 throw new Exception("Internal server error");
-                
+
             }
             return new CreatePartyResponseDto(newParty.PartyId);
         }

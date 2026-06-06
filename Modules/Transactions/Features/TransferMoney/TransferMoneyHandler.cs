@@ -16,6 +16,8 @@ namespace Transactions.Features.TransferMoney
 
         public async Task<(bool IsValid, TransferResultDto? DuplicateResult, TransferSessionDto? Session)> PrepareTransferAsync(CreateTransferRequestDto request)
         {
+            //create idempotency key
+
             var existingOrder = await _context.PaymentOrders.AsNoTracking()
                 .FirstOrDefaultAsync(p => p.IdempotencyKey == request.IdempotencyKey);
 
