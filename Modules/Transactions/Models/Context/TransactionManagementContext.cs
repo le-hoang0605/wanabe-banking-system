@@ -9,7 +9,7 @@ namespace Transactions.Models.Context
         public DbSet<PaymentOrder> PaymentOrders { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.HasDefaultSchema("....."); create separate schema 
+            modelBuilder.HasDefaultSchema("transaction-domain"); //create separate schema 
 
             //ledgerEntry
             modelBuilder.Entity<LedgerEntry>(entity =>

@@ -16,4 +16,8 @@
       <Folder Include="Controllers\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Accounts\Accounts.csproj" />
+    </ItemGroup>
+
 </Project>
