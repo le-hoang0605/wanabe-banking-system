@@ -5,10 +5,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Accounts.Migrations
 {
-    /// <inheritdoc />
     public partial class InitialTransactionsDb : Migration
     {
-        /// <inheritdoc />
+       
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(

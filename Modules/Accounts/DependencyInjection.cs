@@ -15,14 +15,13 @@ public static class DependencyInjection
     public static IServiceCollection AddAccountsModule(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DBConnection");
-        //Tạm thời chuyển sang dùng InMemoryDatabase để test liên kết mô-đun
+     
         services.AddDbContext<AccountManagementContext>(options =>
             options.UseSqlServer(connectionString));
 
         services.AddScoped<IAccountManagementContext>(provider =>
             provider.GetRequiredService<AccountManagementContext>());
-        // You can also register internal services/repositories here if you have them
-        // services.AddScoped<IAccountService, AccountService>();
+
 
         services.AddScoped<Features.PostLedgerEntry.IAccountService, Features.PostLedgerEntry.AccountService>();
 

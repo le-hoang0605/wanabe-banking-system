@@ -1,6 +1,7 @@
 using Accounts.Models;
 using Accounts.Models.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace Accounts.Features.PostLedgerEntry;
 
@@ -14,9 +15,9 @@ internal class AccountService : IAccountService
     }
 
     // HÀM XỬ LÝ TRỪ TIỀN (DEBIT)
-    public async Task<AccountOpResult> DebitAsync(string accountNumber, double amount, Guid transactionId)
+    public async Task<AccountOpResult> DebitAsync(Guid accountId, double amount, Guid transactionId)
     {
-        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == accountNumber);
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == accountId);
 
         if (account == null) 
             return new AccountOpResult(false, "Account not exist.");
@@ -39,10 +40,10 @@ internal class AccountService : IAccountService
     }
 
     // HÀM XỬ LÝ CỘNG TIỀN (CREDIT)
-    public async Task<AccountOpResult> CreditAsync(string accountNumber, double amount, Guid transactionId)
+    public async Task<AccountOpResult> CreditAsync(Guid accountId, double amount, Guid transactionId)
     {
       
-        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == accountNumber);
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == accountId);
 
         if (account == null) 
             return new AccountOpResult(false, "Account not exist.");
