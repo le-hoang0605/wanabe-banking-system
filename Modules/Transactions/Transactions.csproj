@@ -17,6 +17,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Accounts\Accounts.csproj" />
+      <ProjectReference Include="..\Authentication\Authentications.csproj" />
+      <ProjectReference Include="..\Parties\Parties.csproj" />
     </ItemGroup>
 
 </Project>

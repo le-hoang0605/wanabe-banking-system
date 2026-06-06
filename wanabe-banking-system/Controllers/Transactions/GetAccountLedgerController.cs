@@ -1,7 +1,7 @@
-﻿using FluentMigrator;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Transactions.Features.GetAccountLedger;
 
-namespace Transactions.Features.GetAccountLedger
+namespace wanabe_banking_system.Controllers
 {
     [ApiController]
     [Route("api/transactions")]
@@ -14,6 +14,7 @@ namespace Transactions.Features.GetAccountLedger
         {
             _handler = handler;
         }
+
         [HttpGet("ledger/{accountId:guid}")]
         public async Task<IActionResult> GetLedger(Guid accountId)
         {

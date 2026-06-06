@@ -1,11 +1,7 @@
-using Accounts;
 using Authentications;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi;
 using Parties;
 using Transactions;
-using Transactions;
-using wanabe_banking_system;
 using wanabe_banking_system.UseCases;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +21,6 @@ builder.Services.AddControllers()
     .AddApplicationPart(typeof(Authentications.DependencyInjection).Assembly)
     .AddApplicationPart(typeof(Parties.DependencyInjection).Assembly);
 
->>>>>>> upstream / feature / account
 
 
 // Add services to the container.

@@ -1,8 +1,8 @@
-﻿using FluentMigrator;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Transactions.DTOs;
+using wanabe_banking_system.UseCases;
 
-namespace Transactions.Features.TransferMoney
+namespace wanabe_banking_system.Controllers
 {
     [Route("api/transactions")]
     [ApiController]

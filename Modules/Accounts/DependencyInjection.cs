@@ -1,4 +1,3 @@
-﻿using Accounts.Features.AuditAccountBalance;
 using Accounts.Features.ChangeAccountStatus;
 using Accounts.Features.CreateAccount;
 using Accounts.Features.GetAccountByNumber;
@@ -26,14 +25,13 @@ public static class DependencyInjection
         // You can also register internal services/repositories here if you have them
         // services.AddScoped<IAccountService, AccountService>();
         // Đăng ký Feature Service chính thức
-        services.AddScoped<Features.PostLedgerEntry.IPostLedgerEntryService, Features.PostLedgerEntry.PostLedgerEntryService>();
+        services.AddScoped<Features.PostLedgerEntry.IAccountService, Features.PostLedgerEntry.AccountService>();
         
         services.AddScoped<IGetAccountByNumberService, GetAccountByNumberService>();
         services.AddScoped<IGetAccountsByPartyIdService, GetAccountsByPartyIdService>();
         services.AddScoped<ICreateAccountService, CreateAccountService>();
-        services.AddScoped<IPostLedgerEntryService, PostLedgerEntryService>();
-        services.AddScoped<IAuditAccountBalanceService, AuditAccountBalanceService>();
         services.AddScoped<IChangeAccountStatusService, ChangeAccountStatusService>();
+        services.AddScoped<IAccountService, AccountService>();
         
         return services;
     }
