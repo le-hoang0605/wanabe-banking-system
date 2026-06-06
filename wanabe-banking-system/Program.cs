@@ -1,19 +1,31 @@
 using Accounts;
+using Authentications;
 using Microsoft.OpenApi;
+using Microsoft.OpenApi;
+using Parties;
 using Transactions;
+using Transactions;
+using wanabe_banking_system;
+using wanabe_banking_system.UseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DBConnection");
 
-//module accounts
-builder.Services.AddAccountsModule(builder.Configuration);
-//module transactions
+
 builder.Services.AddTransactionsModule(builder.Configuration);
-//config
+builder.Services.AddAuthenticationsModule(builder.Configuration);
+builder.Services.AddPartiesModule(builder.Configuration);
+
+builder.Services.AddScoped<LoginOrchestrator>();
+
 builder.Services.AddControllers()
     .AddApplicationPart(typeof(Accounts.DependencyInjection).Assembly)
-    .AddApplicationPart(typeof(Transactions.DependencyInjection).Assembly);
+    .AddApplicationPart(typeof(Transactions.DependencyInjection).Assembly)
+    .AddApplicationPart(typeof(Authentications.DependencyInjection).Assembly)
+    .AddApplicationPart(typeof(Parties.DependencyInjection).Assembly);
+
+>>>>>>> upstream / feature / account
 
 
 // Add services to the container.
@@ -54,8 +66,9 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
 
+app.MapControllers();
 app.UseStaticFiles();
+
 app.MapGet("/", () => "banking system API");
 app.Run();

@@ -1,5 +1,4 @@
-﻿using Accounts.Controllers;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Transactions.DTOs;
 using Transactions.Models;
 using Transactions.Models.Context;
@@ -9,27 +8,30 @@ namespace Transactions.Features.TransferMoney
     internal class TransferMoneyHandler : ITransferMoneyHandler
     {
         private readonly TransactionManagementContext _context;
-        private readonly IAccountService _accountService;
-        public TransferMoneyHandler(TransactionManagementContext context, IAccountService accountService)
+
+        public TransferMoneyHandler(TransactionManagementContext context)
         {
             _context = context;
-            _accountService = accountService;
         }
-        public async Task<TransferResultDto> HandleAsync(CreateTransferRequestDto request)
+
+        public async Task<(bool IsValid, TransferResultDto? DuplicateResult, TransferSessionDto? Session)> PrepareTransferAsync(CreateTransferRequestDto request)
         {
-            //check IDEMPOTENCY
-            var existingOrder = await _context.PaymentOrders.AsNoTracking().FirstOrDefaultAsync(p => p.IdempotencyKey == request.IdempotencyKey);
+            // 1. Kiểm tra trùng lặp (Idempotency)
+            var existingOrder = await _context.PaymentOrders.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.IdempotencyKey == request.IdempotencyKey);
+
             if (existingOrder != null)
             {
-                return new TransferResultDto(
-                IsSuccess: existingOrder.Status == Status.Executed,
-                Message: $"Duplicate transaction. Current status: {existingOrder.Status}",
-                PaymentId: existingOrder.PaymentId,
-                Status: existingOrder.Status.ToString()
-                 );
+                var duplicateResult = new TransferResultDto(
+                    IsSuccess: existingOrder.Status == Status.Executed,
+                    Message: $"Duplicate transaction. Current status: {existingOrder.Status}",
+                    PaymentId: existingOrder.PaymentId,
+                    Status: existingOrder.Status.ToString()
+                );
+                return (false, duplicateResult, null);
             }
 
-            //initialize payment order
+            // 2. Khởi tạo payment order (Trạng thái tạm tính là Processing)
             var order = new PaymentOrder
             {
                 PaymentId = Guid.NewGuid(),
@@ -37,64 +39,49 @@ namespace Transactions.Features.TransferMoney
                 DebtorAccountId = request.DebtorAccountId,
                 CreditorAccountId = request.CreditorAccountId,
                 Amount = request.Amount,
-                Status = Status.Initiated,
+                Status = Status.Processing,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // 3. Ghi Sổ chi tiết LedgerEntries local để lưu vết lịch sử giao dịch
+            var debitEntry = new LedgerEntry
+            {
+                EntryId = Guid.NewGuid(),
+                PaymentId = order.PaymentId,
+                AccountId = request.DebtorAccountId,
+                TransactionType = TransactionType.Debit,
+                Amount = request.Amount,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var creditEntry = new LedgerEntry
+            {
+                EntryId = Guid.NewGuid(),
+                PaymentId = order.PaymentId,
+                AccountId = request.CreditorAccountId,
+                TransactionType = TransactionType.Credit,
+                Amount = request.Amount,
                 CreatedAt = DateTime.UtcNow
             };
 
             _context.PaymentOrders.Add(order);
+            _context.LedgerEntries.AddRange(debitEntry, creditEntry);
             await _context.SaveChangesAsync();
 
+            // 4. Đóng gói thông tin vào DTO công khai (Bây giờ cả hai đầu đều là Guid nên hết lỗi)
+            var session = new TransferSessionDto(order.PaymentId, order.DebtorAccountId, order.CreditorAccountId, order.Amount);
 
+            return (true, null, session);
+        }
 
-            //check balance
-            order.Status = Status.Processing;
+        public async Task ConfirmTransferAsync(Guid paymentId, bool isSuccess, string errorMessage)
+        {
+            var localOrder = await _context.PaymentOrders.FirstOrDefaultAsync(o => o.PaymentId == paymentId);
+            if (localOrder == null) return;
+
+            localOrder.Status = isSuccess ? Status.Executed : Status.Failed;
+
             await _context.SaveChangesAsync();
-            bool hasEnoughMoney = await _accountService.HasSufficientBalanceAsync(request.DebtorAccountId, request.Amount);
-
-            if (!hasEnoughMoney)
-            {
-                order.Status = Status.Failed;
-                await _context.SaveChangesAsync();
-                return new TransferResultDto(false, "Failure: Your account has insufficient balance.", order.PaymentId, "Failed");
-            }
-            //proceed with ledger
-            using var dbTransaction = await _context.Database.BeginTransactionAsync();
-            try
-            {
-                var debitEntry = new LedgerEntry
-                {
-                    EntryId = Guid.NewGuid(),
-                    PaymentId = order.PaymentId,
-                    AccountId = request.DebtorAccountId,
-                    TransactionType = TransactionType.Debit,
-                    Amount = request.Amount,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                var creditEntry = new LedgerEntry
-                {
-                    EntryId = Guid.NewGuid(),
-                    PaymentId = order.PaymentId,
-                    AccountId = request.CreditorAccountId,
-                    TransactionType = TransactionType.Credit,
-                    Amount = request.Amount,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                _context.LedgerEntries.AddRange(debitEntry, creditEntry);
-
-                order.Status = Status.Executed;
-                await _context.SaveChangesAsync();
-                await dbTransaction.CommitAsync();
-                return new TransferResultDto(true, "Money transfer successful!", order.PaymentId, "Executed");
-            }
-            catch (Exception ex)
-            {
-                await dbTransaction.RollbackAsync();
-                order.Status = Status.Failed;
-                await _context.SaveChangesAsync();
-                return new TransferResultDto(false, $"System error: {ex.Message}", order.PaymentId, "Failed");
-            }
         }
     }
 }

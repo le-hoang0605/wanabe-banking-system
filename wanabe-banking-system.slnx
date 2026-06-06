@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="Modules/Accounts/Accounts.csproj" />
+  <Project Path="Modules/Authentication/Authentications.csproj" Id="06bb527c-a36f-4b96-818a-18257cce403b" />
   <Project Path="Modules/Parties/Parties.csproj" />
   <Project Path="Modules/Transactions/Transactions.csproj" />
   <Project Path="wanabe-banking-system/wanabe-banking-system.csproj" />

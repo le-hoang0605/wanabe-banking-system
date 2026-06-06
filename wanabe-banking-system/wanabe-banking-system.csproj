@@ -20,11 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\Parties\" />
     <Folder Include="Models\Context\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Modules\Accounts\Accounts.csproj" />
+    <ProjectReference Include="..\Modules\Authentication\Authentications.csproj" />
     <ProjectReference Include="..\Modules\Parties\Parties.csproj" />
     <ProjectReference Include="..\Modules\Transactions\Transactions.csproj" />
   </ItemGroup>

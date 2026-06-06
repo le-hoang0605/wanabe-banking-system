@@ -9,16 +9,17 @@ namespace Transactions.Features.TransferMoney
     [Tags("Transactions")]
     public class TransferMoneyController : ControllerBase
     {
-        private readonly ITransferMoneyHandler _context;
+        private readonly TransferOrchestrator _orchestrator;
 
-        public TransferMoneyController(ITransferMoneyHandler context)
+        public TransferMoneyController(TransferOrchestrator orchestrator)
         {
-            _context = context;
+            _orchestrator = orchestrator;
         }
+
         [HttpPost("transfer")]
         public async Task<IActionResult> Transfer([FromBody] CreateTransferRequestDto request)
         {
-            var result = await _context.HandleAsync(request);
+            var result = await _orchestrator.ExecuteTransferAsync(request);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }
