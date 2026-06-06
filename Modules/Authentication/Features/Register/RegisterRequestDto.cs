@@ -7,6 +7,6 @@ namespace Authentications.Features.Register
     public record RegisterRequestDto
     (
         Guid PartyId,
-        string HashPassword
+        string Password
     );
 }

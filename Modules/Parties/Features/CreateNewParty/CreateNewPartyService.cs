@@ -15,11 +15,11 @@ namespace Parties.Features.CreateNewParty
         {
             _context = context;
         }
-        public async Task<Boolean> CreateNewParty(PartyRequestDto request)
+        public async Task<CreatePartyResponseDto> CreateNewParty(PartyRequestDto request)
         {
-            if (String.IsNullOrWhiteSpace(request.Email)) return false;
+            if (String.IsNullOrWhiteSpace(request.Email)) return null;
             var email = await _context.Parties.AnyAsync(p => p.Email == request.Email.Trim());
-            if (!email) return false;
+            if (!email) return null;
 
             var newParty = new Party
             {
@@ -30,7 +30,16 @@ namespace Parties.Features.CreateNewParty
                 KycStatus = Kycstatus.Pending
             };
             _context.Parties.Add(newParty);
-            return true;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Internal server error");
+                
+            }
+            return new CreatePartyResponseDto(newParty.PartyId);
         }
     }
 }

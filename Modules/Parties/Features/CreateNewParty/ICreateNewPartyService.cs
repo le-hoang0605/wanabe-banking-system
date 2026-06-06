@@ -6,6 +6,6 @@ namespace Parties.Features.CreateNewParty
 {
     public interface ICreateNewPartyService
     {
-        public Task<Boolean> CreateNewParty(PartyRequestDto data);
+        public Task<CreatePartyResponseDto> CreateNewParty(PartyRequestDto data);
      }
 }

@@ -1,9 +1,7 @@
 ﻿using Authentications.Models;
 using Authentications.Models.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace Authentications.Features.Register
 {
@@ -16,13 +14,13 @@ namespace Authentications.Features.Register
         }
         public async Task<Boolean> Register(RegisterRequestDto request)
         {
-            if (String.IsNullOrWhiteSpace(request.PartyId.ToString()) || String.IsNullOrWhiteSpace(request.HashPassword))
+            if (String.IsNullOrWhiteSpace(request.PartyId.ToString()) || String.IsNullOrWhiteSpace(request.Password))
                 return false;
             var credential = await _context.Credentials.AnyAsync(c => c.PartyId == request.PartyId);
             if (credential) return false;
 
             string salt = BCrypt.Net.BCrypt.GenerateSalt(12);
-            string passwordHashedWithSalt = BCrypt.Net.BCrypt.HashPassword(request.HashPassword, salt);
+            string passwordHashedWithSalt = BCrypt.Net.BCrypt.HashPassword(request.Password, salt);
 
             var newCredential = new Credential
             {
@@ -31,6 +29,15 @@ namespace Authentications.Features.Register
                 UpdatedAt = DateTime.Now
             };
             _context.Credentials.Add(newCredential);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Internal server error");
+                
+            }
             return true;
         }
     }

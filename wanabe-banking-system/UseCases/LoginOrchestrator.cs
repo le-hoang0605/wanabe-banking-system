@@ -37,7 +37,7 @@ namespace wanabe_banking_system.UseCases
 
             if (!authResult) throw new UnauthorizedAccessException("Invalid credentials");
 
-            // find a matching account
+            // find matching account(s)
             // ...
             var accountResult = await _accountService.ExecuteAsync((Guid)partyResult.PartyId);
             List<string> roles = new List<string>();
@@ -46,7 +46,7 @@ namespace wanabe_banking_system.UseCases
                 roles.Add(account.Role.ToString());
             }
 
-            //generate token
+            // generate token
             string token = _tokenGenerator.GenerateJwtToken(
                 new TokenRequestDto(
                     (Guid)partyResult.PartyId, 
