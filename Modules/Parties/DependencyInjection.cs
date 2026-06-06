@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Accounts.Features.CreateAccount;
 
 namespace Parties
 {
@@ -20,9 +21,8 @@ namespace Parties
 
             services.AddScoped<Parties.Features.CreateNewParty.ICreateNewPartyService, 
                 Parties.Features.CreateNewParty.CreateNewPartyService>();
-            services.AddScoped<Parties.Features.FindPartyViaEmail.IFindPartyViaEmailService, 
+            services.AddScoped<Parties.Features.FindPartyViaEmail.IFindPartyViaEmailService,
                 Parties.Features.FindPartyViaEmail.FindPartyViaEmailService>();
-
             return services;
         }
     }

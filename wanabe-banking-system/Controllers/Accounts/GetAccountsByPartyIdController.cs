@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace wanabe_banking_system.Controllers.Accounts;
 
 [ApiController]
+[Tags("Accounts")]
 public class GetAccountsByPartyIdController : ControllerBase
 {
     private readonly IGetAccountsByPartyIdService _service;

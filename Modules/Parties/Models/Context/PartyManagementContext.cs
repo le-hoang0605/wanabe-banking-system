@@ -7,13 +7,15 @@ namespace Parties.Models.Context
 {
     internal class PartyManagementContext : DbContext, IPartyManagementContext
     {
+        
+        public PartyManagementContext(DbContextOptions<PartyManagementContext> options) : base(options){ }
         public DbSet<Party> Parties { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             //party-domain schema declaration
-            modelBuilder.HasDefaultSchema("party_domain");
+            modelBuilder.HasDefaultSchema("party-domain");
 
             // 1. Cấu hình cho Entity Party
             modelBuilder.Entity<Party>(entity =>

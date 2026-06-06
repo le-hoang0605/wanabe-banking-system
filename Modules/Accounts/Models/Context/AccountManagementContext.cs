@@ -10,11 +10,14 @@ namespace Accounts.Models.Context
     {
         public AccountManagementContext(DbContextOptions<AccountManagementContext> options) : base(options){ }
         public DbSet<Account> Accounts { get; set; }
+      
 
         public new Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return base.SaveChangesAsync(cancellationToken);
         }
+        
+        
 
         public override int SaveChanges()
         {
@@ -22,6 +25,9 @@ namespace Accounts.Models.Context
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            
+            modelBuilder.HasDefaultSchema("account-domain"); //create separate schema 
+            
             modelBuilder.Entity<Account>().HasKey(a => a.AccountId);
             modelBuilder.Entity<Account>().Property(a => a.AccountNumber).IsRequired().HasMaxLength(50);
             modelBuilder.Entity<Account>().Property(a => a.Role).HasConversion<string>().HasMaxLength(50).IsRequired();
@@ -32,7 +38,7 @@ namespace Accounts.Models.Context
             modelBuilder.Entity<Account>().Property(a => a.CreatedAt).IsRequired();
             modelBuilder.Entity<Account>().Property(a => a.UpdatedAt);
 
-
+            
         }
     }
 }

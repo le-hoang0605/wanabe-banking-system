@@ -12,7 +12,7 @@ namespace Transactions
     {
         public static IServiceCollection AddTransactionsModule(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString("DBConnection");
 
             services.AddDbContext<TransactionManagementContext>(options =>
                 options.UseSqlServer(connectionString));

@@ -24,12 +24,13 @@ public static class DependencyInjection
             provider.GetRequiredService<AccountManagementContext>());
         // You can also register internal services/repositories here if you have them
         // services.AddScoped<IAccountService, AccountService>();
-        // Đăng ký Feature Service chính thức
+
         services.AddScoped<Features.PostLedgerEntry.IAccountService, Features.PostLedgerEntry.AccountService>();
         
         services.AddScoped<IGetAccountByNumberService, GetAccountByNumberService>();
         services.AddScoped<IGetAccountsByPartyIdService, GetAccountsByPartyIdService>();
-        services.AddScoped<ICreateAccountService, CreateAccountService>();
+        services.AddScoped<ICreateAccountService,
+            CreateAccountService>();
         services.AddScoped<IChangeAccountStatusService, ChangeAccountStatusService>();
         services.AddScoped<IAccountService, AccountService>();
         

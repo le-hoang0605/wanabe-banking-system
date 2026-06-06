@@ -9,6 +9,7 @@ namespace Accounts.Models.Context
     {
         DbSet<Account> Accounts { get; set; }
     
+        
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         int SaveChanges();
