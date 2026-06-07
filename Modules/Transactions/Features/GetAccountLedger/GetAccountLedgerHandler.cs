@@ -12,12 +12,14 @@ namespace Transactions.Features.GetAccountLedger
         {
             _context = context;
         }
-        public async Task<IEnumerable<LedgerEntryDto>> HandleAsync(Guid accountId)
+        public async Task<IEnumerable<LedgerEntryDto>> HandleAsync(Guid accountId, int pageNumber, int pageSize)
         {
             return await _context.LedgerEntries
                 .AsNoTracking()
                 .Where(l => l.AccountId == accountId)
                 .OrderByDescending(l => l.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)  //paginatuon starts here
+                .Take(pageSize)
                 .Select(l => new LedgerEntryDto(
                     l.EntryId,
                     l.PaymentId,
