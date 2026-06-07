@@ -4,6 +4,8 @@ namespace Transactions.Features.GetAccountLedger
 {
     public interface IGetAccountLedgerHandler
     {
-        Task<IEnumerable<LedgerEntryDto>> HandleAsync(Guid accountId);
+        // adding pagination
+        Task<IEnumerable<LedgerEntryDto>> HandleAsync(Guid accountId, int pageNumber, int pageSize);
+
     }
 }

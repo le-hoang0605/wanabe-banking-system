@@ -11,12 +11,14 @@ namespace Transactions.Features.GetPaymentOrders
         {
             _context = context;
         }
-        public async Task<IEnumerable<PaymentOrderDto>> HandleAsync(Guid accountId)
+        public async Task<IEnumerable<PaymentOrderDto>> HandleAsync(Guid accountId, int pageNumber, int pageSize)
         {
             return await _context.PaymentOrders
                 .AsNoTracking()
                 .Where(p => p.DebtorAccountId == accountId || p.CreditorAccountId == accountId)
                 .OrderByDescending(p => p.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .Select(p => new PaymentOrderDto(
                     p.PaymentId,
                     p.DebtorAccountId,

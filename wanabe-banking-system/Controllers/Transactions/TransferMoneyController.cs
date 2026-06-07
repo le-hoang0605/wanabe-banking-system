@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Transactions.DTOs;
 using wanabe_banking_system.UseCases;
 
@@ -7,6 +8,7 @@ namespace wanabe_banking_system.Controllers
     [Route("api/transactions")]
     [ApiController]
     [Tags("Transactions")]
+    [Authorize]
     public class TransferMoneyController : ControllerBase
     {
         private readonly TransferOrchestrator _orchestrator;
@@ -17,6 +19,7 @@ namespace wanabe_banking_system.Controllers
         }
 
         [HttpPost("transfer")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> Transfer([FromBody] CreateTransferRequestDto request, [FromHeader(Name = "X-Idempotency-Key")] string? idempotencyKey)
         {
             //check idempotency key if we dont have we will creaate a new one
@@ -32,6 +35,7 @@ namespace wanabe_banking_system.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         [HttpPost("deposit")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Deposit([FromBody] CreateDepositRequestDto request, [FromHeader(Name = "X-Idempotency-Key")] string? idempotencyKey)
         {
             var key = string.IsNullOrEmpty(idempotencyKey) ? Guid.NewGuid().ToString() : idempotencyKey;
@@ -41,6 +45,19 @@ namespace wanabe_banking_system.Controllers
                 key
             );
             var result = await _orchestrator.ExecuteDepositAsync(internalRequest);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        [HttpPost("withdraw")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> Withdraw([FromBody] CreateWithdrawRequestDto request, [FromHeader(Name = "X-Idempotency-Key")] string? idempotencyKey)
+        {
+            var key = string.IsNullOrEmpty(idempotencyKey) ? Guid.NewGuid().ToString() : idempotencyKey;
+            var internalRequest = new WithdrawRequestWithKeyDto(
+                request.DebtorAccountId,
+                request.Amount,
+                key
+            );
+            var result = await _orchestrator.ExecuteWithdrawAsync(internalRequest);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }

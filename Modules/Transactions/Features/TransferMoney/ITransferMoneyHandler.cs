@@ -10,5 +10,9 @@ namespace Transactions.Features.TransferMoney
 
         //this is for depositing money
         Task<(bool IsValid, TransferResultDto? DuplicateResult, TransferSessionDto? Session)> PrepareDepositAsync(DepositRequestWithKeyDto request);
+
+
+        //thís is for withdrawing money
+        Task<(bool IsValid, TransferResultDto? DuplicateResult, TransferSessionDto? Session)> PrepareWithdrawAsync(WithdrawRequestWithKeyDto request);
     }
 }
