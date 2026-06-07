@@ -73,3 +73,6 @@ app.UseStaticFiles();
 
 app.MapGet("/", () => "banking system API");
 app.Run();
+
+
+public partial class Program { }
