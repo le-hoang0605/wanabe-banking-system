@@ -31,5 +31,17 @@ namespace wanabe_banking_system.Controllers
             var result = await _orchestrator.ExecuteTransferAsync(internalRequest);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        [HttpPost("deposit")]
+        public async Task<IActionResult> Deposit([FromBody] CreateDepositRequestDto request, [FromHeader(Name = "X-Idempotency-Key")] string? idempotencyKey)
+        {
+            var key = string.IsNullOrEmpty(idempotencyKey) ? Guid.NewGuid().ToString() : idempotencyKey;
+            var internalRequest = new DepositRequestWithKeyDto(
+                request.CreditorAccountId,
+                request.Amount,
+                key
+            );
+            var result = await _orchestrator.ExecuteDepositAsync(internalRequest);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
     }
 }
