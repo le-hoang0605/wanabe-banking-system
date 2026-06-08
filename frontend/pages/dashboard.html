@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | Wanabe Bank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-50 min-h-screen">
+    <nav class="bg-blue-600 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <span class="font-bold text-xl tracking-tight">WANABE BANKING</span>
+
+            <div class="flex items-center gap-4">
+                <a href="create-account.html"
+                    class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm">
+                    Create Account
+                </a>
+
+                <a href="profile.html" class="text-sm hover:underline">Profile</a>
+
+                <button id="btnLogout"
+                    class="bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div
+            class="md:col-span-3 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm gap-4">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Welcome Back, <span id="navUserFullName"
+                        class="text-blue-600">User</span>!</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Monitor your multi-accounts balance, run instantaneous actions,
+                    or execute ledger entries.</p>
+            </div>
+            <div class="flex items-center gap-2.5 bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-100">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span class="text-[10px] font-bold text-slate-600 tracking-wider uppercase">Secure Session Active</span>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div
+                class="bg-gradient-to-br from-blue-700 via-indigo-800 to-indigo-950 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/5 rounded-full filter blur-xl"></div>
+                <p class="text-xs text-blue-200 tracking-wide uppercase font-semibold">Available Balance</p>
+                <h2 id="balanceDisplay" class="text-3xl font-black mt-1 tracking-tight">--- VND</h2>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="openDepositModal()"
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition-all shadow-md shadow-emerald-100 text-xs tracking-wider uppercase">
+                    ↓ Deposit
+                </button>
+                <button onclick="openWithdrawModal()"
+                    class="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-xl font-bold transition-all shadow-md shadow-amber-100 text-xs tracking-wider uppercase">
+                    ↑ Withdraw
+                </button>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-slate-800 text-sm"><img src="../assets/images/transaction.svg"
+                            style="display: inline; margin-right: 5px;">Transaction History</h3>
+                    <span
+                        class="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">Live</span>
+                </div>
+                <div id="transactionList" class="space-y-1">
+                    <p class="text-gray-400 text-xs py-2">Loading ledger...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:col-span-2 space-y-6">
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 tracking-tight flex items-center gap-2">
+                    <span class="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                        </svg>
+                    </span>
+                    Internal Transfer Money
+                </h2>
+
+                <div class="mb-5">
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select
+                        Source Account / Card</label>
+                    <div id="cardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    </div>
+                </div>
+
+                <form id="transferForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Target
+                            Account Number</label>
+                        <input type="text" id="targetAccountNumber" required
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm placeholder:text-slate-400"
+                            placeholder="Enter destination account number...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Amount
+                            (VND)</label>
+                        <input type="number" id="transferAmount" required min="1000"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold"
+                            placeholder="0">
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 shadow-md shadow-blue-100 transition text-sm">
+                        Confirm Ledger Transfer
+                    </button>
+                </form>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div
+                    class="bg-gradient-to-r from-slate-800 to-slate-900 p-5 rounded-2xl text-white shadow-sm flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 text-amber-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold tracking-wide uppercase text-slate-400">Security Notice</h4>
+                        <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">Never share your login credentials,
+                            password or transaction tokens with anyone.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold tracking-wide uppercase text-slate-400">Idempotency Layer</h4>
+                        <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">Every action uses a dynamic unique
+                            cryptographic signature key to prevent duplication.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="transactionModal"
+        class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Transaction Details</h3>
+            <div id="modalContent" class="space-y-3 text-sm text-slate-600"></div>
+            <button onclick="closeModal()"
+                class="mt-6 w-full bg-slate-100 hover:bg-slate-200 py-2 rounded-xl font-bold text-slate-700 transition">Close</button>
+        </div>
+    </div>
+
+    <div id="depositModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Deposit Money</h3>
+            <form id="depositForm" class="space-y-4">
+                <p class="text-xs text-slate-500">The money will be deposited into the selected source account.</p>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Amount (VND)</label>
+                    <input type="number" id="depositAmount" required min="1000"
+                        class="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 font-semibold"
+                        placeholder="0">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeDepositModal()"
+                        class="w-full bg-slate-100 hover:bg-slate-200 py-2 rounded-xl font-bold text-slate-700">Cancel</button>
+                    <button type="submit"
+                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl font-bold shadow-md shadow-emerald-100">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="withdrawModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Withdraw Money</h3>
+            <form id="withdrawForm" class="space-y-4">
+                <p class="text-xs text-slate-500">The money will be withdrawn from the selected source account.</p>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Amount (VND)</label>
+                    <input type="number" id="withdrawAmount" required min="1000"
+                        class="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-amber-500 font-semibold"
+                        placeholder="0">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeWithdrawModal()"
+                        class="w-full bg-slate-100 hover:bg-slate-200 py-2 rounded-xl font-bold text-slate-700">Cancel</button>
+                    <button type="submit"
+                        class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold shadow-md shadow-amber-100">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="module" src="../assets/js/dashboard.js"></script>
+</body>
+
+</html>

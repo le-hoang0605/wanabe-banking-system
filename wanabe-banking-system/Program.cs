@@ -84,10 +84,23 @@ builder.Services.AddSwaggerGen(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        policy =>
+        {
+            policy.AllowAnyOrigin()   
+                .AllowAnyMethod()   
+                .AllowAnyHeader(); 
+        });
+});
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseCors("AllowAllOrigins");
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
@@ -101,3 +114,6 @@ app.UseStaticFiles();
 
 app.MapGet("/", () => "banking system API");
 app.Run();
+
+
+public partial class Program { }
