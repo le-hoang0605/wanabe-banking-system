@@ -19,6 +19,6 @@ public class CreateAccountController : ControllerBase
     {
         var result = await _service.ExecuteAsync(dto);
         
-        return Created($"api/v1/accounts/{result.AccountNumber}", result);
+        return Created($"api/accounts/{result.AccountNumber}", result);
     }
 }

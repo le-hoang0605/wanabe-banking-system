@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using wanabe_banking_system.UseCases;
 using wanabe_banking_system.UseCases.RegisterOrchestrator;
 
@@ -52,6 +53,33 @@ namespace wanabe_banking_system.Controllers.Authentication
             catch (Exception)
             {
                 return StatusCode(500, new { Error = "Unexpected error. The server burned down or sth" });
+            }
+        }
+        
+        [Authorize] 
+        [HttpGet("profile")]
+        public ActionResult GetProfile()
+        {
+            try
+            {
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                var fullName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+                var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+        
+                return Ok(new
+                {
+                    fullName = fullName ?? "N/A",
+                    email = email ?? "N/A",
+                    userId = userId ?? "N/A"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    Message = ex.Message, 
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace 
+                });
             }
         }
     }
